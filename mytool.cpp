@@ -28,5 +28,6 @@ void show_contours(cv::Mat& image, vector<Contour>& contours)
 	{
 		cv::drawContours(image, contours, index, Scalar(0, 0, 255), 2);
 	}
+	imshow("contour", image);
 }
 

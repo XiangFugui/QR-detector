@@ -44,7 +44,7 @@ vector<Contour> ImageHandler::get_patterns()
 	//cout << "patterns size" << Qr_patterns.size() << endl;
 	if (!QR_patterns.empty())
 	{
-		show_contour(0, src_image, QR_patterns);
+		//show_contour(0, src_image, QR_patterns);
 		show_contours(src_image, QR_patterns);
 		//cout << "qr size:" << QR_patterns.size() << endl;
 	}
