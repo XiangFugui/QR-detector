@@ -5,7 +5,7 @@
 using namespace std;
 using namespace cv;
 
-bool Pattern_finding::check_contour(const int index, int possible_layer = 6)
+bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 {
 	int total_layer = 1;
 	int child_index = hierarchy.at(index)[2];
@@ -33,19 +33,19 @@ bool Pattern_finding::check_contour(const int index, int possible_layer = 6)
 
 }
 
-bool Pattern_finding::is_possible_index(const int index)
+bool PatternFinding::is_possible_index(const int index)
 {
 	return !(marked_hashtable[index]);
 }
 
-void Pattern_finding::mark(const int index)
+void PatternFinding::mark(const int index)
 {
 	marked_hashtable[index] = 1;
 }
 
 
 
-vector<int> Pattern_finding::detect(int possible_layer)
+vector<Contour>& PatternFinding::detect(int possible_layer)
 {
 	vector<int> pattern_index;
 	int num_contours = contours.size();
@@ -59,18 +59,19 @@ vector<int> Pattern_finding::detect(int possible_layer)
 		
 		if (check_contour(index, possible_layer))
 		{
-			pattern_index.push_back(index);
+
+			QR_patterns.push_back(contours[index]);
 		}
 	}
-	return pattern_index;
+	return QR_patterns;
 }
 
-int Pattern_finding::get_grandson(const int index)
+int PatternFinding::get_grandson(const int index)
 {
 	return hierarchy.at(hierarchy.at(index)[2])[2];
 }
 
-bool Pattern_finding::check_area_of_contour(const int first_layer_index)
+bool PatternFinding::check_area_of_contour(const int first_layer_index)
 {
 	int second_layer_index = get_grandson(first_layer_index);
 	int third_layer_index = get_grandson(second_layer_index);
@@ -99,7 +100,7 @@ bool Pattern_finding::check_area_of_contour(const int first_layer_index)
 
 
 
-Pattern_finding::Pattern_finding(Mat& image)
+PatternFinding::PatternFinding(Mat& image)
 {
 
 	findContours(image, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
@@ -107,7 +108,7 @@ Pattern_finding::Pattern_finding(Mat& image)
 }
 
 
-Pattern_finding::~Pattern_finding()
+PatternFinding::~PatternFinding()
 {
 	delete[] marked_hashtable;
 }

@@ -9,8 +9,8 @@ using namespace cv;
 typedef vector<Point> Contour;
 typedef vector<Vec4i> Hierarchy;
 
-//extern class Pattern_finding;
-Image_handler::Image_handler(string path)//
+//extern class PatternFinding;
+ImageHandler::ImageHandler(string path)//
 {
 	src_image = imread(path, IMREAD_COLOR);
 	if (!src_image.data)
@@ -20,12 +20,12 @@ Image_handler::Image_handler(string path)//
 
 }
 
-Image_handler::~Image_handler()
+ImageHandler::~ImageHandler()
 {
 
 }
 
-void Image_handler::convert2black_and_white()
+void ImageHandler::convert2black_and_white()
 {
 	cvtColor(src_image, threshold_image, CV_BGR2GRAY);
 	//threshold(threshold_image, threshold_image, 120, 255, CV_THRESH_BINARY);
@@ -37,19 +37,15 @@ void Image_handler::convert2black_and_white()
 	Canny(threshold_image, threshold_image, 100, 200);
 }
 
-vector<int> Image_handler::get_patterns()
+vector<Contour> ImageHandler::get_patterns()
 {
-	Pattern_finding detector(threshold_image);
-	vector<int> Qr_patterns = detector.detect();
+	PatternFinding detector(threshold_image);
+	vector<Contour> QR_patterns = detector.detect();
 	//cout << "patterns size" << Qr_patterns.size() << endl;
-	if (!Qr_patterns.empty())
+	if (!QR_patterns.empty())
 	{
-		for (int var : Qr_patterns)
-		{
-		show_contour(var, src_image, detector);
-
-		}
-		cout << "qr size:" << Qr_patterns.size() << endl;
+		show_contour(0, src_image, QR_patterns);
+		cout << "qr size:" << QR_patterns.size() << endl;
 		//show_contour(Qr_patterns[3], src_image, detector);
 	}
 	else
@@ -57,10 +53,10 @@ vector<int> Image_handler::get_patterns()
 		cout << "No pattern find" << endl;
 		imshow("No pattern", threshold_image);
 	}
-	return Qr_patterns;
+	return QR_patterns;
 
 }
-void Image_handler::show_image()
+void ImageHandler::show_image()
 {
 	imshow("image", threshold_image);
 }
