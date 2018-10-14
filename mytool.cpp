@@ -21,4 +21,12 @@ void show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours)
 	imshow("contour", image);
 
 }
+void show_contours(cv::Mat& image, vector<Contour>& contours)
+{
+	size_t num = contours.size();
+	for (size_t index = 0; index < num; index++)
+	{
+		cv::drawContours(image, contours, index, Scalar(0, 0, 255), 2);
+	}
+}
 

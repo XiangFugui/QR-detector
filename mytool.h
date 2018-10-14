@@ -7,3 +7,5 @@ extern class vector<Contour> contours;
 void show_rect(int contour_id, cv::Mat& image, vector<Contour>& contours);
 
 void show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours);
+
+void show_contours(cv::Mat& image, vector<Contour>& contours);

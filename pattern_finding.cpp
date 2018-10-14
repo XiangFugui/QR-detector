@@ -54,7 +54,8 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 	{
 		if (is_possible_index(index) == false)
 		{
-			continue;
+			cout << "pass index" << index << endl;
+			//continue;
 		}
 		
 		if (check_contour(index, possible_layer))
