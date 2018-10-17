@@ -4,6 +4,7 @@
 #include<string>
 #include"image_handler.h"
 #include"determine_orientation.h"
+#include"transform.h"
 using namespace std;
 using namespace cv;
 
@@ -46,7 +47,7 @@ vector<Contour> ImageHandler::get_patterns()
 
 	if (QR_patterns.size()==3)
 	{
-		//show_contour(0, src_image, QR_patterns);
+		show_contours( src_image, QR_patterns);
 		//cout << "qr size:" << QR_patterns.size() << endl;
 	}
 	else
@@ -57,11 +58,19 @@ vector<Contour> ImageHandler::get_patterns()
 	return QR_patterns;
 }
 
-void ImageHandler::QR_in_image()
+Position& ImageHandler::QR_in_image()
 {
 	Determine_orientation orientation_obj(QR_patterns[0], QR_patterns[1], QR_patterns[2]);
-	Position position = orientation_obj.find_orientation();
-	cout << "position" << position.Top << endl;
+	position = orientation_obj.find_orientation();
+	return position;
+}
+
+Mat& ImageHandler::transform()
+{
+	AffineTrans trans_obj(position);
+	QR_image=trans_obj.transform(src_image);
+	imshow("QR_trans", QR_image);
+	return QR_image;
 }
 
 void ImageHandler::show_image()

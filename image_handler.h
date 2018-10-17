@@ -6,6 +6,7 @@
 //#include<vector>
 //#include"pattern_finding.h"
 #include "mytool.h"
+#include "determine_orientation.h"
 using namespace std;
 using namespace cv;
 
@@ -22,10 +23,13 @@ public:
 	vector<Contour> get_patterns();
 	void show_image();
 	void convert2black_and_white();
-	void QR_in_image();
+	Position& QR_in_image();
+	Mat& transform();
 private:
 	Mat src_image;
 	Mat threshold_image;
+	Mat QR_image;
 	vector<Contour> QR_patterns;
+	Position position;
 };
 

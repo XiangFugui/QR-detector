@@ -4,12 +4,12 @@ using namespace std;
 using namespace cv;
 
 typedef vector<Point> Contour;
-
+//这些点都是质心
 struct Position
 {
-	Point Top;
-	Point Bottom;
-	Point Right;
+	Point2f Top;
+	Point2f Bottom;
+	Point2f Right;
 };
 
 class Determine_orientation
@@ -19,11 +19,11 @@ public:
 	~Determine_orientation();
 	Position& find_orientation();
 private:
-	static double calc_slope(const Point& pointA, const Point& pointB);
-	static double calc_perpendicular_dist(const Point& pointA, const Point& pointB, const Point& pointC, double slope);
-	static double calc_dist(const Point& pointA, const Point& pointB);
-	void get_points_relation(const Point& median1, const Point& median2, const Point& outlier);
-	Point point_A, point_B, point_C;
+	double calc_slope(const Point2f& pointA, const Point2f& pointB);
+	double calc_perpendicular_dist(const Point2f& pointA, const Point2f& pointB, const Point2f& pointC, double slope);
+	double calc_dist(const Point2f& pointA, const Point2f& pointB);
+	void get_points_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier);
+	Point2f point_A, point_B, point_C;
 	Position position;
 };
 
