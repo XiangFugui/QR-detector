@@ -15,8 +15,9 @@ typedef vector<Vec4i> Hierarchy;
 //extern class PatternFinding detector;
 class ImageHandler
 {
-	friend void show_rect(int contour_id, cv::Mat& image, vector<Contour>& contours);
-	friend void show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours);
+	friend void m_show_rect(int contour_id, cv::Mat& image, vector<Contour>& contours);
+	friend void m_show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours);
+	friend void m_show_contours(cv::Mat& image, vector<Contour>& contours);
 public:
 	ImageHandler(string path);
 	~ImageHandler();
@@ -25,6 +26,8 @@ public:
 	void convert2black_and_white();
 	Position& QR_in_image();
 	Mat& transform();
+	void show_position();
+	void show_contours();
 private:
 	Mat src_image;
 	Mat threshold_image;

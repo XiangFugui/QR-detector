@@ -12,6 +12,7 @@ typedef vector<Point> Contour;
 typedef vector<Vec4i> Hierarchy;
 
 //extern class PatternFinding;
+extern void m_show_contours(cv::Mat& image, vector<Contour>& contours);
 ImageHandler::ImageHandler(string path)//
 {
 	src_image = imread(path, IMREAD_COLOR);
@@ -45,16 +46,7 @@ vector<Contour> ImageHandler::get_patterns()
 	//cout << "patterns size" << Qr_patterns.size() << endl;
 	//show_contours(src_image, QR_patterns);
 
-	if (QR_patterns.size()==3)
-	{
-		show_contours( src_image, QR_patterns);
-		//cout << "qr size:" << QR_patterns.size() << endl;
-	}
-	else
-	{
-		cout << "No pattern find" << endl;
-		imshow("No pattern", threshold_image);
-	}
+	
 	return QR_patterns;
 }
 
@@ -77,5 +69,24 @@ void ImageHandler::show_image()
 {
 	imshow("image", threshold_image);
 }
-
-
+void ImageHandler::show_position()
+{
+	
+	circle(src_image, position.Bottom, 2, Scalar(0, 0,255), -1, 8, 0);
+	circle(src_image, position.Top, 2, Scalar(255,0, 0), -1, 8, 0);
+	circle(src_image, position.Right, 2, Scalar(0, 255,0), -1, 8, 0);
+	imshow("circle", src_image);
+}
+void ImageHandler::show_contours()
+{
+	if (QR_patterns.size() == 3)
+	{
+		m_show_contours(src_image, QR_patterns);
+		//cout << "qr size:" << QR_patterns.size() << endl;
+	}
+	else
+	{
+		cout << "No pattern find" << endl;
+		imshow("No pattern", threshold_image);
+	}
+}

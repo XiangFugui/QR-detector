@@ -24,31 +24,39 @@ Determine_orientation::Determine_orientation(Contour& contourA, Contour& contour
 
 Position& Determine_orientation::find_orientation()
 {
-	/*double slope_AB = calc_slope(point_A, point_B);
-	double slope_AC = calc_slope(point_A, point_C);
-	double slope_BC = calc_slope(point_B, point_C);*/
-
 	double dist_AB = calc_dist(point_A, point_B);
 	double dist_AC = calc_dist(point_A, point_C);
 	double dist_BC = calc_dist(point_B, point_C);
 
-	if (dist_AB > dist_BC && dist_AB > dist_AC)
-	{
-		//outlier = C; median1 = A; median2 = B;
-		get_points_relation(point_C, point_A, point_B);
-	}
-	else if (dist_AC > dist_AB && dist_AC > dist_BC)
-	{
-		//outlier = B; median1 = A; median2 = C;
-		get_points_relation(point_B, point_A, point_C);
+	//if (dist_AB > dist_BC && dist_AB > dist_AC)
+	//{
+	//	//outlier = C; median1 = A; median2 = B;
+	//	get_points_relation(point_C, point_A, point_B);
+	//}
+	//else if (dist_AC > dist_AB && dist_AC > dist_BC)
+	//{
+	//	//outlier = B; median1 = A; median2 = C;
+	//	get_points_relation(point_B, point_A, point_C);
 
-	}
-	else if (dist_BC > dist_AB && dist_BC > dist_AC)
+	//}
+	//else if (dist_BC > dist_AB && dist_BC > dist_AC)
+	//{
+	//	//outlier = A;  median1 = B; median2 = C;
+	//	get_points_relation(point_A, point_B, point_C);
+	//}
+	double longest = max(dist_AB, max(dist_AC, dist_BC));
+	if (dist_AB==longest)
 	{
-		//outlier = A;  median1 = B; median2 = C;
 		get_points_relation(point_A, point_B, point_C);
 	}
-
+	if (dist_AC==longest)
+	{
+		get_points_relation(point_A, point_C, point_B);
+	}
+	if (dist_BC==longest)
+	{
+		get_points_relation(point_B, point_C, point_A);
+	}
 	return position;
 }
 
@@ -68,44 +76,98 @@ void Determine_orientation::get_points_relation(const Point2f& median1, const Po
 		cerr << "poisition 在一条支线上" << endl;
 		exit(0);
 	}
-	if (slope <= 0 && ppd_dist < 0)        // Orientation - North
-	{
-		position.Bottom = median1;
-		position.Right = median2;
-		//orientation = CV_QR_NORTH;
-		cout << "North" << endl;
-	}
-	else if (slope > 0 && ppd_dist < 0)        // Orientation - East
-	{
-		position.Right = median1;
-		position.Bottom = median2;
-		//orientation = CV_QR_EAST;
-		cout << "East" << endl;
+	//if (slope <= 0 && ppd_dist < 0)        // Orientation - North
+	//{	
+	//	//我的想法是比较median1和median2的y x坐标
+	//	position.Bottom = median2;//我把这两个点调了一下 TODO
+	//	position.Right = median1;
+	//	//orientation = CV_QR_NORTH;
+	//	cout << "North" << endl;
+	//}
+	//else if (slope > 0 && ppd_dist < 0)        // Orientation - East
+	//{
+	//	position.Right = median1;
+	//	position.Bottom = median2;
+	//	//orientation = CV_QR_EAST;
+	//	cout << "East" << endl;
 
-	}
-	else if (slope < 0 && ppd_dist > 0)        // Orientation - South          
-	{
-		position.Right = median1;
-		position.Bottom = median2;
-		//orientation = CV_QR_SOUTH;
-		cout << "South" << endl;
-	}
+	//}
+	//else if (slope < 0 && ppd_dist > 0)        // Orientation - South          
+	//{
+	//	position.Right = median1;
+	//	position.Bottom = median2;
+	//	//orientation = CV_QR_SOUTH;
+	//	cout << "South" << endl;
+	//}
 
-	else if (slope > 0 && ppd_dist > 0)        // Orientation - West
-	{
-		position.Bottom = median1;
-		position.Right = median2;
-		//orientation = CV_QR_WEST;
-		cout << "West" << endl;
-	}
-	//else if (slope==0)
+	//else if (slope > 0 && ppd_dist > 0)        // Orientation - West
 	//{
 	//	position.Bottom = median1;
 	//	position.Right = median2;
-	//	//orientation = CV_QR_NORTH;
-	//	cout << "???" << endl;
+	//	//orientation = CV_QR_WEST;
+	//	cout << "West" << endl;
 	//}
+	//-----------------------
+	if (slope < 0 )       
+	{
+		if (ppd_dist < 0)
+		{
+			if (median1.y > median2.y)
+			{
+				position.Bottom = median1;
+				position.Right = median2;
+			}
+			else
+			{
+				position.Bottom = median2;
+				position.Right = median1;
 
+			}
+			cout << "North" << endl;
+		}
+		else
+		{
+			if (median1.y > median2.y)
+			{
+				position.Right = median1;
+				position.Bottom = median2;
+			}
+			else
+			{
+				position.Right = median2;
+				position.Bottom = median1;
+			}
+		}
+	}
+	else
+	{
+		if (ppd_dist >= 0)
+		{
+			if (median1.x > median2.x)
+			{
+				position.Bottom = median1;
+				position.Right = median2;
+			}
+			else
+			{
+				position.Bottom = median2;
+				position.Right = median1;
+			}
+		}
+		else
+		{
+			if (median1.x > median2.x)
+			{
+				position.Bottom = median2;
+				position.Right = median1;
+			}
+			else
+			{
+				position.Bottom = median1;
+				position.Right = median2;
+			}
+		}
+	}
 }
 
 
