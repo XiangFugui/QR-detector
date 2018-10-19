@@ -28,6 +28,9 @@ public:
 	Mat& transform();
 	void show_position();
 	void show_contours();
+	void show_center();
+	void show_corner(int id);
+	void show_corners();
 private:
 	Mat src_image;
 	Mat threshold_image;

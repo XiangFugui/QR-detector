@@ -110,6 +110,9 @@ void Determine_orientation::get_points_relation(const Point2f& median1, const Po
 	//-----------------------
 	if (slope < 0 )       
 	{
+		//指    指
+		//
+		//指
 		if (ppd_dist < 0)
 		{
 			if (median1.y > median2.y)
@@ -123,8 +126,10 @@ void Determine_orientation::get_points_relation(const Point2f& median1, const Po
 				position.Right = median1;
 
 			}
-			cout << "North" << endl;
 		}
+		//     指
+		//
+		//指	   指
 		else
 		{
 			if (median1.y > median2.y)
@@ -141,6 +146,9 @@ void Determine_orientation::get_points_relation(const Point2f& median1, const Po
 	}
 	else
 	{
+		//指
+		//
+		//指   指
 		if (ppd_dist >= 0)
 		{
 			if (median1.x > median2.x)
@@ -156,6 +164,9 @@ void Determine_orientation::get_points_relation(const Point2f& median1, const Po
 		}
 		else
 		{
+		//指  指
+		//
+		//    指
 			if (median1.x > median2.x)
 			{
 				position.Bottom = median2;

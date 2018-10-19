@@ -11,8 +11,6 @@ public:
 protected:
 	Point2f TOP,RIGHT,BOTTOM;
 	Mat trans_image;
-
-
 };
 
 Trans::Trans(Position& position):TOP(position.Top), RIGHT(position.Right),BOTTOM(position.Bottom)
@@ -44,8 +42,6 @@ AffineTrans::~AffineTrans()
 }
 Mat& AffineTrans::transform(Mat& image)
 {
-	/*vector<Point> src = { TOP,RIGHT,BOTTOM };
-	vector<Point> dst = {Point(40,40),Point(140,40),Point(40,140)};	*/
 	Point2f src[3] = { TOP,RIGHT,BOTTOM };
 	Point2f dst[3];
 	dst[0] = Point(40, 40);
@@ -55,7 +51,6 @@ Mat& AffineTrans::transform(Mat& image)
 	cout << RIGHT.x << endl;
 	cout << BOTTOM.x << endl;
 	Mat warp_matrix=getAffineTransform(src,dst);
-	cout << "..." << endl;
 	//Mat qr(100, 100, CV_8UC3);
 	warpAffine(image, trans_image, warp_matrix, Size(200, 200));
 	//trans_image.resize((200,200));
