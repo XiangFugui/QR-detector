@@ -103,9 +103,8 @@ bool PatternFinding::check_area_of_contour(const int first_layer_index)
 
 PatternFinding::PatternFinding(Mat& image)
 {
-
 	findContours(image, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE);
-	//cout << "hierarchy size" << contours.size() << endl;
+	cout << "hierarchy size" << contours.size() << endl;
 }
 
 
