@@ -12,10 +12,6 @@ using namespace cv;
 typedef vector<Point> Contour;
 typedef vector<Vec4i> Hierarchy;
 
-//extern class PatternFinding;
-//extern class AffineTrans;
-//extern class GetOrientation;
-//extern struct Position;
 
 class ImageHandler
 {

@@ -3,6 +3,7 @@
 #include<vector>
 #include"opencv2/opencv.hpp"
 #include"image_handler.h"
+#include <numeric>
 
 using namespace std;
 using namespace cv;
@@ -91,66 +92,104 @@ void ImageHandler::show_corners()
 	imshow("circle", src_image);
 }
 
-
+float mean(vector<int>& vec)
+{
+	int sum = accumulate(vec.begin(), vec.end(), 0);
+	double temp = (sum / vec.size());
+	return temp;
+}
 void ImageHandler::show_corner(int id)
 {
 	//这个方法成立的假设在于描述contour的点中有角点
 
-	//0.8
+	//实际上倾斜量在3-7度以内的，这两种方法都不是很精确的
+	//尴尬的角度
 	Contour test = QR_patterns[id];
 	Rect roi = boundingRect(test);
 
-	double x1, x2, y1, y2;
+	int x1, x2, y1, y2;
+
 	x1 = roi.tl().x;
 	y1 = roi.tl().y;
 	x2 = roi.br().x;
 	y2 = roi.br().y;
-	//roi 和 轮廓所圈面积差不多就以 roi的四角为准了
-	double contour_area = contourArea(test);
-	double rect_area = roi.area();
-	cout << "contour_area" << contour_area << endl;
-	cout << "rect_area" << rect_area << endl;
-	cout << contour_area / rect_area << endl;
 
-	double X, Y;
-	//TOP LEFT BOTTOM LEFT
-	double diff[4] = { test[0].y - y1 , x2 - test[0].x , y2 - test[0].y , test[0].x - x1 };
-	int temp[4] = { 0,0,0,0 };
-	//这里我想了好一会，每个点做四次判断。。也不好做优化
-	for (size_t i = 1; i < test.size(); i++)
+	double area_cnt = contourArea(test);
+	double area_rect =roi.area();
+	double ratio = area_cnt / area_rect;
+	cout << "ratio" <<ratio<< endl;
+	
+	if (ratio>0.85)
 	{
-		X = test[i].x;
-		Y = test[i].y;
-		if (Y - y1<diff[TOP])
-		{
-			diff[TOP] = Y - y1;
-			temp[TOP] = i;
-		}
-		if (x2 - X < diff[RIGHT])
-		{
-			diff[RIGHT] = x2 - X;
-			temp[RIGHT] = i;
-		}
-		if (y2 - Y<diff[BOTTOM])
-		{
-			diff[BOTTOM] = y2 - Y;
-			temp[BOTTOM] = i;
-		}
-		if (X - x1<diff[LEFT])
-		{
-			diff[LEFT] = X - x1;
-			temp[LEFT] = i;
-		}
+		Point2f pointA(x1, y1);
+		Point2f pointB(x2, y1);
+		Point2f pointC(x2, y2);
+		Point2f pointD(x1, y2);
+
+		circle(src_image, pointA, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointB, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointC, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointD, 2, Scalar(0, 0, 255), -1, 8, 0);
 	}
-	circle(src_image, test[temp[TOP]], 2, Scalar(0, 0, 255), -1, 8, 0);
-	circle(src_image, test[temp[RIGHT]], 2, Scalar(0, 0, 255), -1, 8, 0);
-	circle(src_image, test[temp[BOTTOM]], 2, Scalar(0, 0, 255), -1, 8, 0);
-	circle(src_image, test[temp[LEFT]], 2, Scalar(0, 0, 255), -1, 8, 0);
+	else
+	{
+		int X, Y;
+
+		vector<int> top_corners;
+		vector<int> right_corners;
+		vector<int> bottom_corners;
+		vector<int> left_corners;
+
+		for (size_t i = 0; i < test.size(); i++)
+		{
+			X = test[i].x;
+			Y = test[i].y;
+
+			int diff_y1 = Y - y1;
+			int diff_y2 = y2 - Y;
+			int diff_x1 = X - x1;
+			int diff_x2 = x2 - X;
+
+			//2这个阈值虽然很可能出错，但确实很精确了
+			int thre_val = 2;
+			if (diff_y1<thre_val)
+			{
+				top_corners.push_back(test[i].x);
+			}
+			if (diff_x2 <thre_val)
+			{
+				right_corners.push_back(test[i].y);
+			}
+			if (diff_y2 <thre_val)
+			{
+				bottom_corners.push_back(test[i].x);
+			}
+			if (diff_x1<thre_val)
+			{
+				left_corners.push_back(test[i].y);
+			}
+		}
+		Point2f pointA(mean(top_corners), y1);
+		Point2f pointB(x2, mean(right_corners));
+		Point2f pointC(mean(bottom_corners), y2);
+		Point2f pointD(x1, mean(left_corners));
+
+		circle(src_image, pointA, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointB, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointC, 2, Scalar(0, 0, 255), -1, 8, 0);
+		circle(src_image, pointD, 2, Scalar(0, 0, 255), -1, 8, 0);
+	}
+	
+	
+
+
+	imshow("corners", src_image);
 }
 
 void ImageHandler::show_rect(int contour_id)
 {
 	cv::Rect box = cv::boundingRect(QR_patterns[contour_id]);
-	cv::rectangle(src_image, box, Scalar(0, 0, 255), 2);
+	cv::rectangle(src_image, box, Scalar(127, 127, 127), 1);
 	imshow("rect", src_image);
 }
+

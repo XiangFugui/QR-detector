@@ -4,9 +4,9 @@
 #include<iostream>
 #include<vector>
 #include"mytool.h"
-#include "image_handler.h"
+//#include "image_handler.h"
 using namespace std;
-typedef vector<cv::Point> Contour;
+typedef vector<Point2f> Contour;
 
 void m_show_rect(int contour_id,cv::Mat& image, vector<Contour>& contours)
 {
@@ -19,8 +19,8 @@ void m_show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours)
 {
 	cv::drawContours(image, contours, contour_id, Scalar(0, 0, 255), 2);
 	imshow("contour", image);
-
 }
+
 void m_show_contours(cv::Mat& image, vector<Contour>& contours)
 {
 	size_t num = contours.size();
