@@ -1,16 +1,19 @@
 #pragma once
 #include "stdafx.h"
 #include<vector>
+#include<iostream>
+#include<map>
 #include"opencv2/opencv.hpp"
 #include"get_orientation.h"
-#include<iostream>
 using namespace std;
 using namespace cv;
-GetOrientation::GetOrientation(Contour& contourA, Contour& contourB, Contour& contourC)
+GetOrientation::GetOrientation(vector<Contour>& QR_patterns)
 {
-	Moments momentA = moments(contourA);
-	Moments momentB = moments(contourB);
-	Moments momentC = moments(contourC);
+	this->QR_patterns = QR_patterns;
+
+	Moments momentA = moments(QR_patterns[0]);
+	Moments momentB = moments(QR_patterns[1]);
+	Moments momentC = moments(QR_patterns[2]);
 	point_A.x = (momentA.m10 / momentA.m00);
 	point_A.y = (momentA.m01 / momentA.m00);
 
@@ -19,6 +22,8 @@ GetOrientation::GetOrientation(Contour& contourA, Contour& contourB, Contour& co
 
 	point_C.x = (momentC.m10 / momentC.m00);
 	point_C.y = (momentC.m01 / momentC.m00);
+	cntInd_of_mess = { { point_A ,0},{ point_B,1},{ point_C,2 } };
+
 }
 
 
@@ -33,28 +38,27 @@ Position& GetOrientation::find_orientation()
 
 	if (dist_AB==longest)
 	{
-		get_points_relation(point_A, point_B, point_C);
+		get_relation(point_A, point_B, point_C);
 	}
 	if (dist_AC==longest)
 	{
-		get_points_relation(point_A, point_C, point_B);
+		get_relation(point_A, point_C, point_B);
 	}
 	if (dist_BC==longest)
 	{
-		get_points_relation(point_B, point_C, point_A);
+		get_relation(point_B, point_C, point_A);
 	}
 
 	return position;
 }
 
 
-void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier)
+void GetOrientation::get_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier)
 {
 	//这两个函数有问题
 	double slope = calc_slope(median1, median2);
 	double ppd_dist = calc_perpendicular_dist(median1, median2, outlier, slope);
 
-	position.Top = outlier;
 	cout << "slope" << slope<< endl;
 	cout << "dist" << ppd_dist<<endl;
 	if (ppd_dist == 0)
@@ -63,6 +67,7 @@ void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& 
 		cerr << "poisition 在一条支线上" << endl;
 		exit(0);
 	}
+	//那这么看来，我的这个思路是完全可以理清3个位置的
 	if (slope < 0 )       
 	{
 		//回    回
@@ -72,15 +77,16 @@ void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& 
 		{
 			if (median1.y > median2.y)
 			{
-				position.Bottom = median1;
-				position.Right = median2;
+				position.Bottom_mass_point = median1;
+				position.Right_mass_point = median2;
 			}
 			else
 			{
-				position.Bottom = median2;
-				position.Right = median1;
+				position.Bottom_mass_point = median2;
+				position.Right_mass_point = median1;
 
 			}
+			ORIENTATION = NorthWest;
 		}
 		//     回
 		//
@@ -89,15 +95,17 @@ void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& 
 		{
 			if (median1.y > median2.y)
 			{
-				position.Right = median1;
-				position.Bottom = median2;
+				position.Right_mass_point = median1;
+				position.Bottom_mass_point = median2;
 			}
 			else
 			{
-				position.Right = median2;
-				position.Bottom = median1;
+				position.Right_mass_point = median2;
+				position.Bottom_mass_point = median1;
 			}
 		}
+		ORIENTATION = SouthEast;
+
 	}
 	else
 	{
@@ -108,15 +116,17 @@ void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& 
 		{
 			if (median1.x > median2.x)
 			{
-				position.Bottom = median1;
-				position.Right = median2;
+				position.Bottom_mass_point = median1;
+				position.Right_mass_point = median2;
 			}
 			else
 			{
-				position.Bottom = median2;
-				position.Right = median1;
+				position.Bottom_mass_point = median2;
+				position.Right_mass_point = median1;
 			}
+			ORIENTATION = SouthWest;
 		}
+
 		else
 		{
 		//回  回
@@ -124,18 +134,32 @@ void GetOrientation::get_points_relation(const Point2f& median1, const Point2f& 
 		//    回
 			if (median1.x > median2.x)
 			{
-				position.Bottom = median2;
-				position.Right = median1;
+				position.Bottom_mass_point = median2;
+				position.Right_mass_point = median1;
 			}
 			else
 			{
-				position.Bottom = median1;
-				position.Right = median2;
+				position.Bottom_mass_point = median1;
+				position.Right_mass_point = median2;
 			}
+			ORIENTATION = NorthWest;
+
 		}
 	}
+	position.Top_mass_point = outlier;
+	get_figuration();
 }
 
+void GetOrientation::get_figuration()
+{
+	//太花式了。。。
+	//这种方法太智息了
+	//太智熄了
+
+	position.Top = QR_patterns[cntInd_of_mess[position.Top_mass_point]];
+	position.Right = QR_patterns[cntInd_of_mess[position.Right_mass_point]];
+	position.Bottom = QR_patterns[cntInd_of_mess[position.Bottom_mass_point]];
+}
 
 double GetOrientation::calc_slope(const Point2f& pointA, const Point2f& pointB)
 {

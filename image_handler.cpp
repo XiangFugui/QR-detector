@@ -62,16 +62,16 @@ vector<Contour> ImageHandler::get_patterns()
 
 Position& ImageHandler::QR_in_image()
 {
-	GetOrientation orientation_obj(QR_patterns[0], QR_patterns[1], QR_patterns[2]);
+	GetOrientation orientation_obj(QR_patterns);
 	position = orientation_obj.find_orientation();
 	return position;
 }
 
-Mat& ImageHandler::transform()
+void ImageHandler::transform()
 {
 	AffineTrans trans_obj(position);
-	QR_image=trans_obj.transform(src_image);
+	Mat warp_matrix =trans_obj.transform();
+	warpAffine(src_image, trans_image, warp_matrix, Size(200, 200));
 	imshow("QR_trans", QR_image);
-	return QR_image;
 }
 

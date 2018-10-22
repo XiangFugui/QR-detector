@@ -3,6 +3,8 @@
 #include<iostream>
 #include"transform.h"
 
+
+
 Trans::Trans(Position& position) :TOP(position.Top), RIGHT(position.Right), BOTTOM(position.Bottom)
 {
 
@@ -19,7 +21,7 @@ AffineTrans::AffineTrans(Position& position) :Trans(position)
 AffineTrans::~AffineTrans()
 {
 }
-Mat& AffineTrans::transform(Mat& image)
+Mat& AffineTrans::transform()
 {
 	Point2f src[3] = { TOP,RIGHT,BOTTOM };
 	Point2f dst[3];
@@ -30,9 +32,5 @@ Mat& AffineTrans::transform(Mat& image)
 	cout << RIGHT.x << endl;
 	cout << BOTTOM.x << endl;
 	Mat warp_matrix = getAffineTransform(src, dst);
-	//Mat qr(100, 100, CV_8UC3);
-	warpAffine(image, trans_image, warp_matrix, Size(200, 200));
-	//trans_image.resize((200,200));
-	cout << trans_image.size() << endl;
-	return trans_image;
+	return warp_matrix;
 }

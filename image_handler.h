@@ -12,6 +12,8 @@ using namespace cv;
 typedef vector<Point> Contour;
 typedef vector<Vec4i> Hierarchy;
 
+enum orientation{NorthWest,SouthEast,SouthWest,NorthEast};
+orientation ORIENTATION;
 
 class ImageHandler
 {
@@ -25,9 +27,9 @@ public:
 	vector<Contour> get_patterns();
 	void convert2black_and_white();
 	Position& QR_in_image();
-	Mat& transform();
+	void transform();
 
-	void show_position();
+	void show_position(Position& );
 	void show_contours(Mat image);
 	void show_contours();
 	void show_only_contours();
@@ -41,6 +43,7 @@ private:
 	Mat src_image;
 	Mat threshold_image;
 	Mat QR_image;
+	Mat trans_image;
 	vector<Contour> QR_patterns;
 	Position position;
 };

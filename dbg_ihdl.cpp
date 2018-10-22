@@ -3,7 +3,6 @@
 #include<vector>
 #include"opencv2/opencv.hpp"
 #include"image_handler.h"
-#include <numeric>
 
 using namespace std;
 using namespace cv;
@@ -11,7 +10,7 @@ using namespace cv;
 typedef vector<Vec4i> Hierarchy;
 typedef vector<Point> Contour;
 
-enum orientatin { TOP, RIGHT, BOTTOM, LEFT };
+//enum orientatin { TOP, RIGHT, BOTTOM, LEFT };
 
 
 void ImageHandler::show_src_image()
@@ -42,12 +41,12 @@ void ImageHandler::show_thre_image()
 {
 	imshow("image", threshold_image);
 }
-void ImageHandler::show_position()
+void ImageHandler::show_position(Position& position)
 {
 
-	circle(src_image, position.Bottom, 2, Scalar(0, 0, 255), -1, 8, 0);
-	circle(src_image, position.Top, 2, Scalar(255, 0, 0), -1, 8, 0);
-	circle(src_image, position.Right, 2, Scalar(0, 255, 0), -1, 8, 0);
+	circle(src_image, position.Bottom_mass_point, 2, Scalar(0, 0, 255), -1, 8, 0);
+	circle(src_image, position.Top_mass_point, 2, Scalar(255, 0, 0), -1, 8, 0);
+	circle(src_image, position.Right_mass_point, 2, Scalar(0, 255, 0), -1, 8, 0);
 	imshow("circle", src_image);
 }
 
@@ -179,10 +178,6 @@ void ImageHandler::show_corner(int id)
 		circle(src_image, pointC, 2, Scalar(0, 0, 255), -1, 8, 0);
 		circle(src_image, pointD, 2, Scalar(0, 0, 255), -1, 8, 0);
 	}
-	
-	
-
-
 	imshow("corners", src_image);
 }
 
