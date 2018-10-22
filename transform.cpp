@@ -5,16 +5,7 @@
 
 
 
-Trans::Trans(Position& position) :TOP(position.Top), RIGHT(position.Right), BOTTOM(position.Bottom)
-{
-
-}
-
-Trans::~Trans()
-{
-}
-
-AffineTrans::AffineTrans(Position& position) :Trans(position)
+AffineTrans::AffineTrans(Position& position) :TOP(position.Top_mass_point), RIGHT(position.Right_mass_point), BOTTOM(position.Bottom_mass_point)
 {
 }
 

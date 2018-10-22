@@ -28,9 +28,6 @@ public:
 	~GetOrientation();
 	Position& find_orientation();
 private:
-	double calc_slope(const Point2f& pointA, const Point2f& pointB);
-	double calc_perpendicular_dist(const Point2f& pointA, const Point2f& pointB, const Point2f& pointC, double slope);
-	double calc_dist(const Point2f& pointA, const Point2f& pointB);
 	void get_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier);
 	void get_figuration();
 	Point2f point_A, point_B, point_C;
