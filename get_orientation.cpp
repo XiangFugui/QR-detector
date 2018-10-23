@@ -5,9 +5,17 @@
 #include<map>
 #include"opencv2/opencv.hpp"
 #include"get_orientation.h"
-#include "mytool.h"
+//#include "mytool.h"
 using namespace std;
 using namespace cv;
+
+//typedef pair<Point2f, int> pi;
+//extern double calc_slope(const Point2f& pointA, const Point2f& pointB);
+//extern double calc_perpendicular_dist(const Point2f& pointA, const Point2f& pointB, const Point2f& pointC, double slope);
+
+enum orientation { NorthWest, SouthEast, SouthWest, NorthEast };
+orientation ORIENTATION;
+
 GetOrientation::GetOrientation(vector<Contour>& QR_patterns)
 {
 	this->QR_patterns = QR_patterns;
@@ -23,45 +31,48 @@ GetOrientation::GetOrientation(vector<Contour>& QR_patterns)
 
 	point_C.x = (momentC.m10 / momentC.m00);
 	point_C.y = (momentC.m01 / momentC.m00);
-	cntInd_of_mess = { { point_A ,0},{ point_B,1},{ point_C,2 } };
+
+	piA = { point_A,0 };
+	piB = { point_B,1 };
+	piC = { point_C,2 };
 
 }
 
 
 Position& GetOrientation::find_orientation()
 {
-	double dist_AB = calc_dist(point_A, point_B);
-	double dist_AC = calc_dist(point_A, point_C);
-	double dist_BC = calc_dist(point_B, point_C);
+	double dist_AB = calc_dist(piA.first, piB.first);
+	double dist_AC = calc_dist(piA.first, piC.first);
+	double dist_BC = calc_dist(piB.first, piC.first);
 
 
 	double longest = max(dist_AB, max(dist_AC, dist_BC));
 
 	if (dist_AB==longest)
 	{
-		get_relation(point_A, point_B, point_C);
+		get_relation(piA, piB, piC);
 	}
 	if (dist_AC==longest)
 	{
-		get_relation(point_A, point_C, point_B);
+		get_relation(piA, piC, piB);
 	}
 	if (dist_BC==longest)
 	{
-		get_relation(point_B, point_C, point_A);
+		get_relation(piB, piC, piA);
 	}
 
 	return position;
 }
 
 
-void GetOrientation::get_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier)
+void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi& outlier)
 {
 	//这两个函数有问题
-	double slope = calc_slope(median1, median2);
-	double ppd_dist = calc_perpendicular_dist(median1, median2, outlier, slope);
+	double slope = calc_slope(median1.first, median2.first);
+	double ppd_dist = calc_perpendicular_dist(median1.first, median2.first, outlier.first, slope);
 
-	cout << "slope" << slope<< endl;
-	cout << "dist" << ppd_dist<<endl;
+	cout << "slope" << slope << endl;
+	cout << "dist" << ppd_dist << endl;
 	if (ppd_dist == 0)
 	{
 		//TO DO
@@ -69,22 +80,22 @@ void GetOrientation::get_relation(const Point2f& median1, const Point2f& median2
 		exit(0);
 	}
 	//那这么看来，我的这个思路是完全可以理清3个位置的
-	if (slope < 0 )       
+	if (slope < 0)
 	{
 		//回    回
 		//
 		//回
 		if (ppd_dist < 0)
 		{
-			if (median1.y > median2.y)
+			if (median1.first.y > median2.first.y)
 			{
-				position.Bottom_mass_point = median1;
-				position.Right_mass_point = median2;
+				position.Bottom_mass_point = median1.first;
+				position.Right_mass_point = median2.first;
 			}
 			else
 			{
-				position.Bottom_mass_point = median2;
-				position.Right_mass_point = median1;
+				position.Bottom_mass_point = median2.first;
+				position.Right_mass_point = median1.first;
 
 			}
 			ORIENTATION = NorthWest;
@@ -94,15 +105,15 @@ void GetOrientation::get_relation(const Point2f& median1, const Point2f& median2
 		//回	   回
 		else
 		{
-			if (median1.y > median2.y)
+			if (median1.first.y > median2.first.y)
 			{
-				position.Right_mass_point = median1;
-				position.Bottom_mass_point = median2;
+				position.Right_mass_point = median1.first;
+				position.Bottom_mass_point = median2.first;
 			}
 			else
 			{
-				position.Right_mass_point = median2;
-				position.Bottom_mass_point = median1;
+				position.Right_mass_point = median2.first;
+				position.Bottom_mass_point = median1.first;
 			}
 		}
 		ORIENTATION = SouthEast;
@@ -115,51 +126,51 @@ void GetOrientation::get_relation(const Point2f& median1, const Point2f& median2
 		//回   回
 		if (ppd_dist >= 0)
 		{
-			if (median1.x > median2.x)
+			if (median1.first.x > median2.first.x)
 			{
-				position.Bottom_mass_point = median1;
-				position.Right_mass_point = median2;
+				position.Bottom_mass_point = median1.first;
+				position.Right_mass_point = median2.first;
 			}
 			else
 			{
-				position.Bottom_mass_point = median2;
-				position.Right_mass_point = median1;
+				position.Bottom_mass_point = median2.first;
+				position.Right_mass_point = median1.first;
 			}
 			ORIENTATION = SouthWest;
 		}
 
 		else
 		{
-		//回  回
-		//
-		//    回
-			if (median1.x > median2.x)
+			//回  回
+			//
+			//    回
+			if (median1.first.x > median2.first.x)
 			{
-				position.Bottom_mass_point = median2;
-				position.Right_mass_point = median1;
+				position.Bottom_mass_point = median2.first;
+				position.Right_mass_point = median1.first;
 			}
 			else
 			{
-				position.Bottom_mass_point = median1;
-				position.Right_mass_point = median2;
+				position.Bottom_mass_point = median1.first;
+				position.Right_mass_point = median2.first;
 			}
 			ORIENTATION = NorthWest;
 
 		}
 	}
-	position.Top_mass_point = outlier;
-	get_figuration();
-}
-
-void GetOrientation::get_figuration()
-{
-	//太花式了。。。
-	//这种方法太智息了
-	//太智熄了
-
-	position.Top = QR_patterns[cntInd_of_mess[position.Top_mass_point]];
-	position.Right = QR_patterns[cntInd_of_mess[position.Right_mass_point]];
-	position.Bottom = QR_patterns[cntInd_of_mess[position.Bottom_mass_point]];
+	if (position.Bottom_mass_point == median1.first)
+	{
+		position.Bottom = QR_patterns[median1.second];
+		position.Right = QR_patterns[median2.second];
+	}
+	else
+	{
+		position.Bottom = QR_patterns[median2.second];
+		position.Right = QR_patterns[median1.second];
+	}
+	position.Top_mass_point = outlier.first;
+	position.Top = QR_patterns[outlier.second];
+	cout << "!!!" << ORIENTATION << endl;
 }
 
 

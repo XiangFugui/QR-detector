@@ -9,15 +9,7 @@ using namespace cv;
 
 typedef vector<Point> Contour;
 typedef vector<Vec4i> Hierarchy;
-//
-//extern class PatternFinding pf;
-//extern class AffineTrans at;
-//extern class GetOrientation deo;
-//extern struct Position p;
 
-//extern class PatternFinding;
-//extern void m_show_contours(cv::Mat& image, vector<Contour>& contours);
-//extern void m_show_rect(int contour_id, cv::Mat& image, vector<Contour>& contours);
 ImageHandler::ImageHandler(string path)//
 {
 	src_image = imread(path, IMREAD_COLOR);
@@ -67,11 +59,17 @@ Position& ImageHandler::QR_in_image()
 	return position;
 }
 
-void ImageHandler::transform()
+void ImageHandler::affine_transform()
 {
 	AffineTrans trans_obj(position);
 	Mat warp_matrix =trans_obj.transform();
 	warpAffine(src_image, trans_image, warp_matrix, Size(200, 200));
 	imshow("QR_trans", QR_image);
 }
-
+void ImageHandler::persepective_transform()
+{
+	PerspectiveTrans psp(position);
+	Point2f target= psp.find_4th();
+	circle(src_image, target, 2, Scalar(0, 0, 255), 10, 8, 0);
+	imshow("4th", src_image);
+}

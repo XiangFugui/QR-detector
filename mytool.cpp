@@ -8,26 +8,32 @@
 using namespace std;
 typedef vector<Point2f> Contour;
 
-void m_show_rect(int contour_id,cv::Mat& image, vector<Contour>& contours)
+double cross(Point2f& v1, Point2f& v2)
 {
-	cv::Rect box=cv::boundingRect(contours[contour_id]);
-	cv::rectangle(image, box, Scalar(0, 0, 255), 2);
-	imshow("contour", image);
+	return (v1.x*v2.y - v1.y*v2.x);
+}
+double calc_slope(const Point2f& pointA, const Point2f& pointB)
+{
+	double temp = pointB.x - pointA.x;
+	if (temp == 0)
+		return temp;
+	double result = (pointB.y - pointA.y) / temp;
+	return result;
 }
 
-void m_show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours)
+
+double calc_perpendicular_dist(const Point2f& pointA, const Point2f& pointB, const Point2f& pointC, double slope)
 {
-	cv::drawContours(image, contours, contour_id, Scalar(0, 0, 255), 2);
-	imshow("contour", image);
+	double a, b, c, dist;
+	a = slope * (-1);
+	b = 1;
+	c = (slope*pointB.x) - pointB.y;
+	dist = (a*pointC.x + b * pointC.y + c) / sqrt((a*a) + (b*b));
+	return dist;
 }
 
-void m_show_contours(cv::Mat& image, vector<Contour>& contours)
+double calc_dist(const Point2f& pointA, const Point2f& pointB)
 {
-	size_t num = contours.size();
-	for (size_t index = 0; index < num; index++)
-	{
-		cv::drawContours(image, contours, index, Scalar(0, 0, 255), 2);
-	}
-	imshow("contour", image);
+	return sqrt(pow(pointA.x - pointB.x, 2) + pow(pointA.y - pointB.y, 2));
 }
 

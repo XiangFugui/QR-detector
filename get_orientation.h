@@ -1,15 +1,16 @@
 #pragma once
 #include"opencv2/opencv.hpp"
 #include<vector>
+#include"mytool.h"
 using namespace std;
 using namespace cv;
 
 typedef vector<Point> Contour;
+typedef pair<Point2f, int> pi;
 
-enum orientation { NorthWest, SouthEast, SouthWest, NorthEast };
-orientation ORIENTATION;
 
 //这些点都是质心
+
 struct Position
 {
 	Point2f Top_mass_point;
@@ -28,12 +29,15 @@ public:
 	~GetOrientation();
 	Position& find_orientation();
 private:
-	void get_relation(const Point2f& median1, const Point2f& median2, const Point2f& outlier);
+	void get_relation(const pi& median1, const pi& median2, const pi& outlier);
 	void get_figuration();
 	Point2f point_A, point_B, point_C;
+	//Point2f* pA, *pB, *pC;
 	vector<Contour> QR_patterns;
-	map<Point2f, int> cntInd_of_mess;
 	Position position;
+	pi piA;
+	pi piB;
+	pi piC;
 };
 
 
