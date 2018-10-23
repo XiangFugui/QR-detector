@@ -139,7 +139,6 @@ Quad PerspectiveTrans::detemine_corners()
 Point2f PerspectiveTrans::find_4th()
 {
 	Point2f target;
-	cout << "ORIENTATION" << ORIENTATION << endl;
 
 	switch (ORIENTATION)
 	{
@@ -162,7 +161,7 @@ Point2f PerspectiveTrans::find_4th()
 	default:
 		break;
 	}
-	cout << "target.x "<< target.x << endl;
+	
 	return target;
 }
 
@@ -171,7 +170,7 @@ Point2f PerspectiveTrans::get_intersection_point(Point2f a1, Point2f& a2, Point2
 
 	Point2f r(a2 - a1);
 	Point2f s(b2 - b1);
-	Point2f t(a1 - b1);
+	Point2f t(b1 - a1);
 	double ratio = cross(t, s) / cross(r, s);
 	Point2f intersection = ratio * r + a1;
 	return intersection;

@@ -70,6 +70,6 @@ void ImageHandler::persepective_transform()
 {
 	PerspectiveTrans psp(position);
 	Point2f target= psp.find_4th();
-	circle(src_image, target, 2, Scalar(0, 0, 255), 10, 8, 0);
+	circle(src_image, target, 2, Scalar(0, 0, 255), 5, 8, 0);
 	imshow("4th", src_image);
 }

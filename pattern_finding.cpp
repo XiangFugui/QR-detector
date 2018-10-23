@@ -5,6 +5,7 @@
 using namespace std;
 using namespace cv;
 
+//优化idea:管你成功不成功都把你mark了，成功的我check_area_of_contour我传入最内层的index
 bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 {
 	int total_layer = 1;
@@ -28,7 +29,6 @@ bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 		}
 		return false;
 	}
-
 	return (check_area_of_contour(index));
 
 }
@@ -49,14 +49,13 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 {
 	vector<int> pattern_index;
 	int num_contours = contours.size();
-	marked_hashtable = new int[num_contours]();
+	marked_hashtable = new unsigned int[num_contours]();
 	for (int index = 0; index<num_contours; index++)
 	{
 		if (is_possible_index(index) == false)
 		{
 			continue;
 		}
-		
 		if (check_contour(index, possible_layer))
 		{
 			QR_patterns.push_back(contours[index]);
@@ -64,6 +63,7 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 	}
 	delete[] marked_hashtable;
 	marked_hashtable = NULL;
+	cout << "posible Contours " << QR_patterns.size() << endl;
 	return QR_patterns;
 }
 
@@ -74,6 +74,7 @@ int PatternFinding::get_grandson(const int index)
 
 bool PatternFinding::check_area_of_contour(const int first_layer_index)
 {
+	cout << "check area" << endl;
 	int second_layer_index = get_grandson(first_layer_index);
 	int third_layer_index = get_grandson(second_layer_index);
 

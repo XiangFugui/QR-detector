@@ -24,5 +24,5 @@ private:
 	vector<Contour> contours;
 	Hierarchy hierarchy;
 	vector<Contour> QR_patterns;
-	int *marked_hashtable;
+	unsigned int *marked_hashtable;
 };

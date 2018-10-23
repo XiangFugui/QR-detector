@@ -96,7 +96,6 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 			{
 				position.Bottom_mass_point = median2.first;
 				position.Right_mass_point = median1.first;
-
 			}
 			ORIENTATION = NorthWest;
 		}
@@ -115,8 +114,9 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 				position.Right_mass_point = median2.first;
 				position.Bottom_mass_point = median1.first;
 			}
+			ORIENTATION = SouthEast;
+
 		}
-		ORIENTATION = SouthEast;
 
 	}
 	else
@@ -154,8 +154,7 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 				position.Bottom_mass_point = median1.first;
 				position.Right_mass_point = median2.first;
 			}
-			ORIENTATION = NorthWest;
-
+			ORIENTATION = NorthEast;
 		}
 	}
 	if (position.Bottom_mass_point == median1.first)
@@ -170,7 +169,8 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 	}
 	position.Top_mass_point = outlier.first;
 	position.Top = QR_patterns[outlier.second];
-	cout << "!!!" << ORIENTATION << endl;
+
+	cout << "!!" << ORIENTATION << endl;
 }
 
 

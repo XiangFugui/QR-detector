@@ -12,6 +12,7 @@ double cross(Point2f& v1, Point2f& v2)
 {
 	return (v1.x*v2.y - v1.y*v2.x);
 }
+
 double calc_slope(const Point2f& pointA, const Point2f& pointB)
 {
 	double temp = pointB.x - pointA.x;
