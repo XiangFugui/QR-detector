@@ -70,6 +70,5 @@ void ImageHandler::persepective_transform()
 	PerspectiveTrans psp(position);
 	QR_image = psp.transform(src_image);
 	imshow("QR_trans", QR_image);
-
 	
 }

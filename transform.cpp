@@ -36,7 +36,7 @@ Mat AffineTrans::transform(Mat src_image)
 	return QR_image;
 }
 
-PerspectiveTrans::PerspectiveTrans(Position& position) :top_cnt(position.Top), right_cnt(position.Right), bottom_cnt(position.Bottom)
+PerspectiveTrans::PerspectiveTrans(Position& position)
 {
 	find_corners(position.Top, top_quad);
 	find_corners(position.Right, right_quad);
@@ -138,21 +138,19 @@ void PerspectiveTrans::find_corners(Contour& contour, Quad& quad)
 //真正确定四个角点了
 Mat PerspectiveTrans::transform(Mat image)
 {
-	//这么写稍微有些错误。。。
-	Point2f br = find_4th();
-	vector<Point2f> src = { top_quad.tl, right_quad.tr, br, bottom_quad.bl};
-	//vector<Point2f> dst = { Point2f(0,0),Point2f(image.cols,0),Point2f(image.cols,image.rows),Point2f(0,image.rows) };
-	vector<Point2f> dst = { Point2f(0,0),Point2f(150,0),Point2f(150,150),Point2f(0,150)};
+	//src的写法不是写绝对位置是相对位置
+	Quad corners = determine_relative_location();
+	vector<Point2f> src{corners.tl,corners.tr,corners.br,corners.bl};
+	vector<Point2f> dst{ Point2f(0,0),Point2f(150,0),Point2f(150,150),Point2f(0,150)};
+
 	Mat warp_matrix = getPerspectiveTransform(src, dst);
 	Mat QR_image (150, 150, CV_8UC3);
-	warpPerspective(image, QR_image, warp_matrix,Size(170,170));
+	warpPerspective(image, QR_image, warp_matrix,Size(150,150));
 	return QR_image;
 	/*src.push_back(top_quad.tl);
 	src.push_back(right_quad.tr);
 	src.push_back(bottom_quad.bl);
 	src.push_back(br);*/
-	
-	
 
 }
 Point2f PerspectiveTrans::find_4th()
@@ -184,6 +182,54 @@ Point2f PerspectiveTrans::find_4th()
 	return target;
 }
 
+Quad PerspectiveTrans::determine_absolution_location()
+{
+	Point2f fourth = find_4th();
+	Quad corners;
+	switch (ORIENTATION)
+	{
+	case NorthWest:
+		corners = { top_quad.tl,right_quad.tr,fourth,bottom_quad.bl };
+		break;
+	case SouthEast:
+		corners = { fourth,bottom_quad.tr,top_quad.br,right_quad.bl };
+		break;
+	case SouthWest:
+		corners = { right_quad.tl,fourth,bottom_quad.br,top_quad.bl };
+		break;
+	case NorthEast:
+		corners = { bottom_quad.tl,top_quad.tr,right_quad.br,fourth };
+		break;
+	default:
+		break;
+	}
+	return corners;
+}
+
+
+Quad PerspectiveTrans::determine_relative_location()
+{
+	Point2f fourth = find_4th();
+	Quad relative_corners;
+	switch (ORIENTATION)
+	{
+	case NorthWest:
+		relative_corners = { top_quad.tl,right_quad.tr,fourth,bottom_quad.bl };
+		break;
+	case SouthEast:
+		relative_corners = { top_quad.br,right_quad.bl,fourth,bottom_quad.tr };
+		break;
+	case SouthWest:
+		relative_corners = { top_quad.bl,right_quad.tl,fourth,bottom_quad.br };
+		break;
+	case NorthEast:
+		relative_corners = { top_quad.tr,right_quad.br,fourth,bottom_quad.tl };
+		break;
+	default:
+		break;
+	}
+	return relative_corners;
+}
 Point2f PerspectiveTrans::get_intersection_point(Point2f a1, Point2f& a2, Point2f& b1, Point2f& b2)
 {
 

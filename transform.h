@@ -43,7 +43,9 @@ public:
 	Point2f find_4th();
 	void find_corners(Contour& contour, Quad& quad);
 	Point2f get_intersection_point(Point2f a1, Point2f& a2, Point2f& b1, Point2f& b2);
-	Contour top_cnt, right_cnt, bottom_cnt;
+	Quad determine_absolution_location();
+	Quad determine_relative_location();
+	//Contour top_cnt, right_cnt, bottom_cnt;
 	Quad top_quad, right_quad, bottom_quad;
 };
 
