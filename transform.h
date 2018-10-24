@@ -18,7 +18,7 @@ class AffineTrans
 public:
 	AffineTrans(Position&);
 	~AffineTrans();
-	Mat& transform();
+	Mat transform(Mat src_image);
 
 private:
 	Point2f TOP, RIGHT, BOTTOM;
@@ -32,19 +32,19 @@ struct Quad
 	Point2f br;
 	Point2f bl;
 };
+
 class PerspectiveTrans
 {
 public:
 	PerspectiveTrans(Position& position);
 	~PerspectiveTrans();
-	Mat& transform(Mat& image);
+	Mat transform(Mat image);
 public:
 	Point2f find_4th();
-	void find_coners(Contour& contour, Quad& quad);
-	Quad detemine_corners();
+	void find_corners(Contour& contour, Quad& quad);
+	Point2f get_intersection_point(Point2f a1, Point2f& a2, Point2f& b1, Point2f& b2);
 	Contour top_cnt, right_cnt, bottom_cnt;
 	Quad top_quad, right_quad, bottom_quad;
-	Point2f get_intersection_point(Point2f a1, Point2f& a2, Point2f& b1, Point2f& b2);
 };
 
 

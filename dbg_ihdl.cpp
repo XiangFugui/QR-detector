@@ -85,7 +85,6 @@ void ImageHandler::show_corners()
 {
 	for (int id = 0; id < QR_patterns.size(); id++)
 	{
-		show_corner(id);
 	}
 	imshow("circle", src_image);
 }

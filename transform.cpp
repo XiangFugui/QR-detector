@@ -11,25 +11,36 @@ AffineTrans::~AffineTrans()
 {
 }
 
-Mat& AffineTrans::transform()
+Mat AffineTrans::transform(Mat src_image)
 {
 	Point2f src[3] = { TOP,RIGHT,BOTTOM };
 	Point2f dst[3];
-	dst[0] = Point(40, 40);
+	//dst[0] = Point(40, 40);
+	//dst[1] = Point(140, 40);
+	//dst[2] = Point(40, 140);
+
+	/*dst[0] = Point(40, 40);
 	dst[1] = Point(140, 40);
-	dst[2] = Point(40, 140);
+	dst[2] = Point(40, 140);*/
+	dst[0] = Point(20, 20);
+	dst[1] = Point(120, 20);
+	dst[2] = Point(20, 120);
+
+
 	cout << TOP.x << endl;
 	cout << RIGHT.x << endl;
 	cout << BOTTOM.x << endl;
 	Mat warp_matrix = getAffineTransform(src, dst);
-	return warp_matrix;
+	Mat QR_image;
+	warpAffine(src_image, QR_image, warp_matrix, Size(200, 200));
+	return QR_image;
 }
 
 PerspectiveTrans::PerspectiveTrans(Position& position) :top_cnt(position.Top), right_cnt(position.Right), bottom_cnt(position.Bottom)
 {
-	find_coners(position.Top, top_quad);
-	find_coners(position.Right, right_quad);
-	find_coners(position.Bottom, bottom_quad);
+	find_corners(position.Top, top_quad);
+	find_corners(position.Right, right_quad);
+	find_corners(position.Bottom, bottom_quad);
 }
 
 PerspectiveTrans::~PerspectiveTrans()
@@ -44,7 +55,7 @@ float mean(vector<int>& vec)
 	return (sum / vec.size());
 }
 
-void PerspectiveTrans::find_coners(Contour& contour, Quad& quad)
+void PerspectiveTrans::find_corners(Contour& contour, Quad& quad)
 {
 	//这个方法成立的假设在于描述contour的点中有角点
 
@@ -114,10 +125,6 @@ void PerspectiveTrans::find_coners(Contour& contour, Quad& quad)
 				left_corners.push_back(contour[i].y);
 			}
 		}
-		/*Point2f pointA(mean(top_corners), y1);
-		Point2f pointB(x2, mean(right_corners));
-		Point2f pointC(mean(bottom_corners), y2);
-		Point2f pointD(x1, mean(left_corners));*/
 
 		quad.tl = Point2f(mean(top_corners), y1);
 		quad.tr = Point2f(x2, mean(right_corners));
@@ -126,14 +133,28 @@ void PerspectiveTrans::find_coners(Contour& contour, Quad& quad)
 	}
 }
 
-Mat& PerspectiveTrans::transform(Mat& image)
-{
-	return image;
-}
 
-Quad PerspectiveTrans::detemine_corners()
+
+//真正确定四个角点了
+Mat PerspectiveTrans::transform(Mat image)
 {
-	return top_quad;
+	//这么写稍微有些错误。。。
+	Point2f br = find_4th();
+	vector<Point2f> src = { top_quad.tl, right_quad.tr, br, bottom_quad.bl};
+	//vector<Point2f> dst = { Point2f(0,0),Point2f(image.cols,0),Point2f(image.cols,image.rows),Point2f(0,image.rows) };
+	vector<Point2f> dst = { Point2f(0,0),Point2f(150,0),Point2f(150,150),Point2f(0,150)};
+	Mat warp_matrix = getPerspectiveTransform(src, dst);
+	Mat QR_image (150, 150, CV_8UC3);
+	warpPerspective(image, QR_image, warp_matrix,Size(170,170));
+	if (QR_image.cols == image.cols && QR_image.rows==image.rows)
+		cout << "same" << endl;
+	return QR_image;
+	/*src.push_back(top_quad.tl);
+	src.push_back(right_quad.tr);
+	src.push_back(bottom_quad.bl);
+	src.push_back(br);*/
+	
+	
 
 }
 Point2f PerspectiveTrans::find_4th()

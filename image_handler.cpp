@@ -62,14 +62,14 @@ Position& ImageHandler::QR_in_image()
 void ImageHandler::affine_transform()
 {
 	AffineTrans trans_obj(position);
-	Mat warp_matrix =trans_obj.transform();
-	warpAffine(src_image, trans_image, warp_matrix, Size(200, 200));
+	QR_image =trans_obj.transform(src_image);
 	imshow("QR_trans", QR_image);
 }
 void ImageHandler::persepective_transform()
 {
 	PerspectiveTrans psp(position);
-	Point2f target= psp.find_4th();
-	circle(src_image, target, 2, Scalar(0, 0, 255), 5, 8, 0);
-	imshow("4th", src_image);
+	QR_image = psp.transform(src_image);
+	imshow("QR_trans", QR_image);
+
+	
 }
