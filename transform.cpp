@@ -146,8 +146,6 @@ Mat PerspectiveTrans::transform(Mat image)
 	Mat warp_matrix = getPerspectiveTransform(src, dst);
 	Mat QR_image (150, 150, CV_8UC3);
 	warpPerspective(image, QR_image, warp_matrix,Size(170,170));
-	if (QR_image.cols == image.cols && QR_image.rows==image.rows)
-		cout << "same" << endl;
 	return QR_image;
 	/*src.push_back(top_quad.tl);
 	src.push_back(right_quad.tr);
