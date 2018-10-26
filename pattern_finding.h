@@ -21,6 +21,7 @@ private:
 	bool is_possible_index(const int index);
 	void mark(const int index);
 	int get_grandson(const int index);
+	int get_grandparent(const int index);
 	vector<Contour> contours;
 	Hierarchy hierarchy;
 	vector<Contour> QR_patterns;

@@ -2,6 +2,7 @@
 #include"opencv2/opencv.hpp"
 #include<iostream>
 #include"pattern_finding.h"
+#include<ctime>
 using namespace std;
 using namespace cv;
 
@@ -9,33 +10,34 @@ using namespace cv;
 bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 {
 	int total_layer = 1;
-	int child_index = hierarchy.at(index)[2];
-	vector<int> branch = { index };
-
-	while (child_index != -1)
+	int current_child = hierarchy.at(index)[2];
+	int next_child= current_child;
+	while (next_child != -1)
 	{
-		branch.push_back(child_index);
+		current_child = next_child;
+		mark(current_child);
 		total_layer++;
-		child_index = hierarchy.at(child_index)[2];
+		next_child= hierarchy.at(current_child)[2];
 	}
 	//cout << "total_layer" << total_layer<<endl;
 
-	//父轮廓不行，子怎么会行，标记他们。怎么感觉不太可靠
-	if (total_layer < possible_layer)
+	if (total_layer >= possible_layer)
 	{
-		for (int var : branch)
-		{
-			mark(var);
-		}
-		return false;
+		return (check_area_of_contour(current_child));
 	}
-	return (check_area_of_contour(index));
-
+	return false;
 }
 
 bool PatternFinding::is_possible_index(const int index)
 {
-	return !(marked_hashtable[index]);
+	if (marked_hashtable[index]==1)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 void PatternFinding::mark(const int index)
@@ -47,23 +49,31 @@ void PatternFinding::mark(const int index)
 
 vector<Contour>& PatternFinding::detect(int possible_layer)
 {
-	vector<int> pattern_index;
+	clock_t t1,t2;
+	t1 = clock();
 	int num_contours = contours.size();
 	marked_hashtable = new unsigned int[num_contours]();
+
 	for (int index = 0; index<num_contours; index++)
 	{
-		if (is_possible_index(index) == false)
+		if (is_possible_index(index) == true)
+		{
+			if (check_contour(index, possible_layer))
+			{
+				QR_patterns.push_back(contours[index]);
+			}
+		}
+		else
 		{
 			continue;
 		}
-		if (check_contour(index, possible_layer))
-		{
-			QR_patterns.push_back(contours[index]);
-		}
+		
 	}
 	delete[] marked_hashtable;
 	marked_hashtable = NULL;
 	cout << "posible Contours " << QR_patterns.size() << endl;
+	t2 = clock();
+	cout << "t2-t1" << t2 - t1 << endl;
 	return QR_patterns;
 }
 
@@ -72,22 +82,28 @@ int PatternFinding::get_grandson(const int index)
 	return hierarchy.at(hierarchy.at(index)[2])[2];
 }
 
-bool PatternFinding::check_area_of_contour(const int first_layer_index)
+int PatternFinding::get_grandparent(const int index)
+{
+	return hierarchy.at(hierarchy.at(index)[3])[3];
+}
+
+
+bool PatternFinding::check_area_of_contour(const int innermost_layer)
 {
 	cout << "check area" << endl;
-	int second_layer_index = get_grandson(first_layer_index);
-	int third_layer_index = get_grandson(second_layer_index);
+	int second_layer_index = get_grandparent(innermost_layer);
+	int outermost_layer_index = get_grandparent(second_layer_index);
 
-	double first_layer_area = contourArea(contours.at(first_layer_index));
+	double outermost_layer_area = contourArea(contours.at(outermost_layer_index));
 	double second_layer_area = contourArea(contours.at(second_layer_index));
-	double third_layer_area = contourArea(contours.at(third_layer_index));
+	double innermost_layer_area = contourArea(contours.at(innermost_layer));
 
-	double ratio12 = first_layer_area / (second_layer_area + 1e-5);
-	double ratio23 = second_layer_area / (third_layer_area + 1e-5);
+	double ratio12 = outermost_layer_area / (second_layer_area + 1e-5);
+	double ratio23 = second_layer_area / (innermost_layer_area + 1e-5);
 
-	cout << first_layer_area << endl;
+	cout << outermost_layer_area << endl;
 	cout<< second_layer_area <<endl;
-	cout<< third_layer_area <<endl;
+	cout<< innermost_layer_area <<endl;
 	
 	cout<<"" <<endl;
 	cout<< ratio12 <<endl;
