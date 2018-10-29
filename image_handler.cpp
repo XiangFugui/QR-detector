@@ -28,8 +28,24 @@ ImageHandler::~ImageHandler()
 {
 
 }
+bool ImageHandler::run()
+{
+	cout << "run" << endl;
+	if (!convert2black_and_white())
+	{
+		return false;
+	}
+	if (!get_patterns())
+	{
+		return false;
+	}
 
-void ImageHandler::convert2black_and_white()
+	figure_orientation();
+	persepective_transform();
+	return true;
+}
+
+bool ImageHandler::convert2black_and_white()
 {
 	cvtColor(src_image, threshold_image, CV_BGR2GRAY);
 	//threshold(threshold_image, threshold_image, 120, 255, CV_THRESH_BINARY);
@@ -39,36 +55,50 @@ void ImageHandler::convert2black_and_white()
 	//有些图片肉眼观察正常，但识别不出来，把kernel由(5,5)->(3,3)就好了
 	GaussianBlur(threshold_image, threshold_image, Size(3, 3), 0);//需要吗
 	Canny(threshold_image, threshold_image, 100, 200);
+	if (threshold_image.empty())
+	{
+		return false;
+	}
+	return true;
+
 }
 
-vector<Contour> ImageHandler::get_patterns()
+bool ImageHandler::get_patterns()
 {
 
 	PatternFinding detector(threshold_image);
 	QR_patterns = detector.detect();
 
-	//show_contours(src_image, QR_patterns);
-	
-	return QR_patterns;
+
+	return (QR_patterns.size() == 3);
 }
 
-Position& ImageHandler::QR_in_image()
+Position& ImageHandler::figure_orientation()
 {
 	GetOrientation orientation_obj(QR_patterns);
 	position = orientation_obj.find_orientation();
 	return position;
 }
 
-void ImageHandler::affine_transform()
+Mat ImageHandler::affine_transform()
 {
 	AffineTrans trans_obj(position);
 	QR_image =trans_obj.transform(src_image);
 	imshow("QR_trans", QR_image);
+	return QR_image;
 }
-void ImageHandler::persepective_transform()
+Mat ImageHandler::persepective_transform()
 {
 	PerspectiveTrans psp(position);
 	QR_image = psp.transform(src_image);
-	imshow("QR_trans", QR_image);
-	
+	//imshow("QR_trans", QR_image);
+	return QR_image;
+}
+
+void ImageHandler::show_output()
+{
+	if (!QR_image.empty())
+	{
+		imshow("QRcode", QR_image);
+	}
 }

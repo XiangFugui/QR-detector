@@ -19,7 +19,6 @@ bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 		total_layer++;
 		next_child= hierarchy.at(current_child)[2];
 	}
-	//cout << "total_layer" << total_layer<<endl;
 
 	if (total_layer >= possible_layer)
 	{
@@ -49,12 +48,10 @@ void PatternFinding::mark(const int index)
 
 vector<Contour>& PatternFinding::detect(int possible_layer)
 {
-	clock_t t1,t2;
-	t1 = clock();
+
 	int num_contours = contours.size();
 	marked_hashtable = new unsigned int[num_contours]();
-
-	for (int index = 0; index<num_contours; index++)
+	for (int index = 0; index < num_contours; index++)
 	{
 		if (is_possible_index(index) == true)
 		{
@@ -67,13 +64,15 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 		{
 			continue;
 		}
-		
 	}
+
 	delete[] marked_hashtable;
 	marked_hashtable = NULL;
-	cout << "posible Contours " << QR_patterns.size() << endl;
-	t2 = clock();
-	cout << "t2-t1" << t2 - t1 << endl;
+	if (QR_patterns.size()<3&& possible_layer>4)//至少要5层不然面积做不了
+	{
+		return detect(--possible_layer);//这个我还没检验过
+	}
+	//大于三个的话我也没得办法
 	return QR_patterns;
 }
 
@@ -90,9 +89,10 @@ int PatternFinding::get_grandparent(const int index)
 
 bool PatternFinding::check_area_of_contour(const int innermost_layer)
 {
-	cout << "check area" << endl;
+	cout << "check area" << innermost_layer << endl;
 	int second_layer_index = get_grandparent(innermost_layer);
 	int outermost_layer_index = get_grandparent(second_layer_index);
+	cout << "None" << endl;
 
 	double outermost_layer_area = contourArea(contours.at(outermost_layer_index));
 	double second_layer_area = contourArea(contours.at(second_layer_index));

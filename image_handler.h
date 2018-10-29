@@ -22,12 +22,15 @@ public:
 	ImageHandler(string path);
 	ImageHandler(Mat image);
 	~ImageHandler();
-	vector<Contour> get_patterns();
-	void convert2black_and_white();
-	Position& QR_in_image();
-	void affine_transform();
-	void persepective_transform();
-
+	bool run();
+	bool get_patterns();
+	bool convert2black_and_white();
+	Position& figure_orientation();
+	Mat affine_transform();
+	Mat persepective_transform();
+	
+	
+	void show_output();
 	void show_position(Position& );
 	void show_contours(Mat image);
 	void show_contours();

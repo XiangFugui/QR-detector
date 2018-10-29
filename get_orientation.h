@@ -29,10 +29,9 @@ public:
 	~GetOrientation();
 	Position& find_orientation();
 private:
-	void get_relation(const pi& median1, const pi& median2, const pi& outlier);
+	bool get_relation(const pi& median1, const pi& median2, const pi& outlier);
 	void get_figuration();
 	Point2f point_A, point_B, point_C;
-	//Point2f* pA, *pB, *pC;
 	vector<Contour> QR_patterns;
 	Position position;
 	pi piA;

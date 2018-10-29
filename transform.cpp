@@ -133,13 +133,22 @@ void PerspectiveTrans::find_corners(Contour& contour, Quad& quad)
 	}
 }
 
+void drawtest(Quad& q,Mat& image)
+{
+	circle(image, q.bl, 2, Scalar(0, 255, 0), -1, 8, 0);
+	circle(image, q.br, 2, Scalar(0, 255, 0), -1, 8, 0);
+	circle(image, q.tl, 2, Scalar(0, 255, 0), -1, 8, 0);
+	circle(image, q.tr, 2, Scalar(0, 255, 0), -1, 8, 0);
 
-
+}
 //真正确定四个角点了
 Mat PerspectiveTrans::transform(Mat image)
 {
 	//src的写法不是写绝对位置是相对位置
 	Quad corners = determine_relative_location();
+	drawtest(bottom_quad,image);
+
+	imshow("test", image);
 	vector<Point2f> src{corners.tl,corners.tr,corners.br,corners.bl};
 	vector<Point2f> dst{ Point2f(0,0),Point2f(150,0),Point2f(150,150),Point2f(0,150)};
 

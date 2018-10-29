@@ -52,22 +52,24 @@ Position& GetOrientation::find_orientation()
 	{
 		get_relation(piA, piB, piC);
 	}
-	if (dist_AC==longest)
+	else if (dist_AC==longest)
 	{
 		get_relation(piA, piC, piB);
 	}
-	if (dist_BC==longest)
+	else if (dist_BC==longest)
 	{
 		get_relation(piB, piC, piA);
 	}
-
+	//else
+	//{
+	//	return;//这里我不知道怎么写
+	//}
 	return position;
 }
 
 
-void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi& outlier)
+bool GetOrientation::get_relation(const pi& median1, const pi& median2, const pi& outlier)
 {
-	//这两个函数有问题
 	double slope = calc_slope(median1.first, median2.first);
 	double ppd_dist = calc_perpendicular_dist(median1.first, median2.first, outlier.first, slope);
 
@@ -77,7 +79,7 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 	{
 		//TO DO
 		cerr << "poisition 在一条支线上" << endl;
-		exit(0);
+		return false;
 	}
 	//那这么看来，我的这个思路是完全可以理清3个位置的
 	if (slope < 0)
@@ -169,8 +171,7 @@ void GetOrientation::get_relation(const pi& median1, const pi& median2, const pi
 	}
 	position.Top_mass_point = outlier.first;
 	position.Top = QR_patterns[outlier.second];
-
-	cout << "!!" << ORIENTATION << endl;
+	return true;
 }
 
 
