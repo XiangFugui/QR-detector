@@ -73,7 +73,6 @@ void PerspectiveTrans::find_corners(Contour& contour, Quad& quad)
 	double area_cnt = contourArea(contour);
 	double area_rect = roi.area();
 	double ratio = area_cnt / area_rect;
-	cout << "ratio" << ratio << endl;
 
 	if (ratio>0.85)
 	{
@@ -146,9 +145,8 @@ Mat PerspectiveTrans::transform(Mat image)
 {
 	//src的写法不是写绝对位置是相对位置
 	Quad corners = determine_relative_location();
-	drawtest(bottom_quad,image);
+	//drawtest(bottom_quad,image);
 
-	imshow("test", image);
 	vector<Point2f> src{corners.tl,corners.tr,corners.br,corners.bl};
 	vector<Point2f> dst{ Point2f(0,0),Point2f(150,0),Point2f(150,150),Point2f(0,150)};
 
@@ -156,10 +154,6 @@ Mat PerspectiveTrans::transform(Mat image)
 	Mat QR_image (150, 150, CV_8UC3);
 	warpPerspective(image, QR_image, warp_matrix,Size(150,150));
 	return QR_image;
-	/*src.push_back(top_quad.tl);
-	src.push_back(right_quad.tr);
-	src.push_back(bottom_quad.bl);
-	src.push_back(br);*/
 
 }
 Point2f PerspectiveTrans::find_4th()

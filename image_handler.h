@@ -18,6 +18,7 @@ class ImageHandler
 	//friend void m_show_rect(int contour_id, cv::Mat& image, vector<Contour>& contours);
 	//friend void m_show_contour(int contour_id, cv::Mat& image, vector<Contour>& contours);
 	//friend void m_show_contours(cv::Mat& image, vector<Contour>& contours);
+	friend class VideoHandler;
 public:
 	ImageHandler(string path);
 	ImageHandler(Mat image);

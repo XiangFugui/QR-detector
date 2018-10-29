@@ -26,17 +26,17 @@ ImageHandler::ImageHandler(Mat image)
 
 ImageHandler::~ImageHandler()
 {
-
+	cout << "ihdl is dead" << endl;
 }
 bool ImageHandler::run()
 {
-	cout << "run" << endl;
 	if (!convert2black_and_white())
 	{
 		return false;
 	}
 	if (!get_patterns())
 	{
+		cout << "patterns are less than three" << endl;
 		return false;
 	}
 
@@ -68,8 +68,6 @@ bool ImageHandler::get_patterns()
 
 	PatternFinding detector(threshold_image);
 	QR_patterns = detector.detect();
-
-
 	return (QR_patterns.size() == 3);
 }
 

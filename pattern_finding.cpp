@@ -22,6 +22,7 @@ bool PatternFinding::check_contour(const int index, int possible_layer = 6)
 
 	if (total_layer >= possible_layer)
 	{
+		cout << "possible_layer" << possible_layer << endl;
 		return (check_area_of_contour(current_child));
 	}
 	return false;
@@ -51,6 +52,7 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 
 	int num_contours = contours.size();
 	marked_hashtable = new unsigned int[num_contours]();
+	int cnt = 0;
 	for (int index = 0; index < num_contours; index++)
 	{
 		if (is_possible_index(index) == true)
@@ -62,15 +64,16 @@ vector<Contour>& PatternFinding::detect(int possible_layer)
 		}
 		else
 		{
-			continue;
+			cnt++;
 		}
 	}
-
+	cout << "cnt"<<cnt << endl;
 	delete[] marked_hashtable;
 	marked_hashtable = NULL;
-	if (QR_patterns.size()<3&& possible_layer>4)//至少要5层不然面积做不了
+	if (QR_patterns.size()<3&& --possible_layer>5)//至少要5层不然面积做不了
 	{
-		return detect(--possible_layer);//这个我还没检验过
+		//确实提高了识别能力
+		return detect(possible_layer);//这个我还没检验过
 	}
 	//大于三个的话我也没得办法
 	return QR_patterns;
@@ -92,8 +95,6 @@ bool PatternFinding::check_area_of_contour(const int innermost_layer)
 	cout << "check area" << innermost_layer << endl;
 	int second_layer_index = get_grandparent(innermost_layer);
 	int outermost_layer_index = get_grandparent(second_layer_index);
-	cout << "None" << endl;
-
 	double outermost_layer_area = contourArea(contours.at(outermost_layer_index));
 	double second_layer_area = contourArea(contours.at(second_layer_index));
 	double innermost_layer_area = contourArea(contours.at(innermost_layer));
@@ -101,9 +102,9 @@ bool PatternFinding::check_area_of_contour(const int innermost_layer)
 	double ratio12 = outermost_layer_area / (second_layer_area + 1e-5);
 	double ratio23 = second_layer_area / (innermost_layer_area + 1e-5);
 
-	cout << outermost_layer_area << endl;
-	cout<< second_layer_area <<endl;
-	cout<< innermost_layer_area <<endl;
+	//cout << outermost_layer_area << endl;
+	//cout<< second_layer_area <<endl;
+	//cout<< innermost_layer_area <<endl;
 	
 	cout<<"" <<endl;
 	cout<< ratio12 <<endl;
